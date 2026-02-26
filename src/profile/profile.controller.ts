@@ -12,12 +12,12 @@ export class ProfileController {
     return this.profileService.create(createProfileDto);
   }
 
-  @Get("getProfile:id")
+  @Get("getProfile/:id")
   findOne(@Param("id") id: string) {
     return this.profileService.findOne(+id);
   }
 
-  @Patch("updateProfile:id")
+  @Patch("updateProfile/:id")
   update(@Param("id") id: string, @Body() updateProfileDto: UpdateProfileDto) {
     return this.profileService.update(+id, updateProfileDto);
   }
