@@ -8,7 +8,7 @@ import { ConfigService } from "@nestjs/config";
 import { hash } from "src/auth/hasher";
 import * as argon2 from "argon2";
 import { sign } from "src/auth/sign";
-import { LoginError, RegisterError } from "src/auth/errors";
+import { LoginError, RegisterError } from "src/auth/auth.errors";
 import { ea } from "src/common/go-err";
 
 @Injectable()

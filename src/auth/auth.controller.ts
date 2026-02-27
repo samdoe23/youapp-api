@@ -10,7 +10,7 @@ import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "src/auth/dto/login.dto";
 import { ea } from "src/common/go-err";
-import { LoginError, RegisterError } from "src/auth/errors";
+import { LoginError, RegisterError } from "src/auth/auth.errors";
 
 @Controller()
 export class AuthController {
