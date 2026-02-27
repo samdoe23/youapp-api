@@ -50,7 +50,7 @@ export class AuthService {
   async login({ email, username, password }: LoginDto) {
     const doc = await this.authModel.findOne(
       { $or: [{ email }, { username }] },
-      { password: true, _id: false },
+      { password: true },
     );
 
     if (doc === null) throw LoginError.NOT_FOUND;
