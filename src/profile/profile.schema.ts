@@ -1,46 +1,28 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { argon2Sync, randomBytes } from "node:crypto";
 import { IProfile } from "src/profile/profile.interface";
 import { Iso5218Sex } from "src/profile/iso-5218-sex.enum";
+import { Types } from "mongoose";
 
 @Schema()
 export class Profile implements IProfile {
-  @Prop({ required: true, length: [1, 32] })
-  username: string;
+  @Prop({ type: Types.ObjectId, unique: true })
+  authId: Types.ObjectId;
 
-  @Prop({ required: true, length: [3, 64] })
-  realname: string;
-
-  @Prop({ required: true, unique: true })
-  email: string;
-
-  @Prop({
-    required: true,
-    set: (plain: string): string =>
-      argon2Sync("argon2id", {
-        message: plain,
-        nonce: randomBytes(16),
-        parallelism: 1,
-        tagLength: 64,
-        memory: 2 ** 15, // ~32MB
-        passes: 3,
-      }).toString(),
-  })
-  password: string;
+  @Prop()
+  name: string;
 
   @Prop({
     enum: Iso5218Sex,
-    required: true,
   })
   isoSex: Iso5218Sex;
 
-  @Prop({ required: true })
+  @Prop()
   birthday: Date;
 
-  @Prop({ required: true, min: 0 })
+  @Prop()
   heightInCm: number;
 
-  @Prop({ required: true, min: 0 })
+  @Prop()
   weightInKg: number;
 }
 
