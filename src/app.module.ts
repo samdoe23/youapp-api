@@ -5,6 +5,7 @@ import { ProfileModule } from "./profile/profile.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import * as Joi from "joi";
 import { MongooseModule } from "@nestjs/mongoose";
+import { AuthModule } from "./auth/auth.module";
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { MongooseModule } from "@nestjs/mongoose";
       isGlobal: true,
       validationSchema: Joi.object({
         MONGO_URI: Joi.string().required().uri(),
+        JWT_SECRET: Joi.string().required(),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -21,6 +23,7 @@ import { MongooseModule } from "@nestjs/mongoose";
       }),
     }),
     ProfileModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
