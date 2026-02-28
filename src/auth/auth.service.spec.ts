@@ -5,7 +5,6 @@ import {
   getModelToken,
   MongooseModule,
 } from "@nestjs/mongoose";
-import { Auth, AuthSchema } from "src/auth/auth.schema";
 import { JwtModule, JwtService } from "@nestjs/jwt";
 import { RegisterDto } from "src/auth/dto/register.dto";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -15,10 +14,11 @@ import { LoginError, RegisterError } from "src/auth/auth.errors";
 import { ea } from "src/common/go-err";
 import { Payload } from "src/jwt/jwt.payload";
 import { LoginDto } from "src/auth/dto/login.dto";
+import { User, UserSchema } from "src/user/user.schema";
 
 describe("AuthService", () => {
   let authService: AuthService;
-  let authModel: Model<Auth>;
+  let userModel: Model<User>;
   let jwtService: JwtService;
 
   beforeEach(async () => {
@@ -37,7 +37,7 @@ describe("AuthService", () => {
             uri: config.get("MONGO_TEST_URI"),
           }),
         }),
-        MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema }]),
+        MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
         JwtModule.register({
           secret: "TEST-SECRET",
           signOptions: { expiresIn: "2h" },
@@ -50,7 +50,7 @@ describe("AuthService", () => {
     await mongoc.dropDatabase();
 
     authService = module.get(AuthService);
-    authModel = module.get(getModelToken(Auth.name));
+    userModel = module.get(getModelToken(User.name));
     jwtService = module.get(JwtService);
   });
 
@@ -74,7 +74,7 @@ describe("AuthService", () => {
 
       const payload = jwtService.verify<Payload>(jwt);
 
-      const doc = await authModel.findOne({ username: registerDto.username });
+      const doc = await userModel.findOne({ username: registerDto.username });
 
       expect(payload.sub).toBe(doc!.id);
     });
@@ -131,7 +131,7 @@ describe("AuthService", () => {
 
         const payload = jwtService.verify<Payload>(jwt);
 
-        const doc = await authModel.findOne({ email: loginDto.email });
+        const doc = await userModel.findOne({ email: loginDto.email });
 
         expect(payload.sub).toBe(doc!.id);
       });
@@ -151,7 +151,7 @@ describe("AuthService", () => {
 
         const payload = jwtService.verify<Payload>(jwt);
 
-        const doc = await authModel.findOne({ username: loginDto.username });
+        const doc = await userModel.findOne({ username: loginDto.username });
 
         expect(payload.sub).toBe(doc!.id);
       });

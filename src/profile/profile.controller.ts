@@ -5,8 +5,6 @@ import {
   Post,
   Body,
   Patch,
-  Param,
-  ConflictException,
   NotFoundException,
   UseGuards,
 } from "@nestjs/common";
@@ -14,7 +12,6 @@ import { ProfileService } from "./profile.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { ea } from "src/common/go-err";
-import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import { Payload } from "src/jwt/jwt.payload";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Errors } from "src/profile/profile.errors";
@@ -36,12 +33,7 @@ export class ProfileController {
     if (err !== undefined)
       throw (
         {
-          [Errors.AUTH_ID_NOT_FOUND]: new NotFoundException(
-            "no associated profile",
-          ),
-          [Errors.PROFILE_REGISTERED]: new ConflictException(
-            "profile already registered",
-          ),
+          [Errors.USER_NOT_FOUND]: new NotFoundException("user not found"),
         }[err] ?? err
       );
   }
@@ -53,13 +45,9 @@ export class ProfileController {
     if (err !== undefined)
       throw (
         {
-          [Errors.AUTH_ID_NOT_FOUND]: new NotFoundException(
-            "no associated profile",
-          ),
+          [Errors.USER_NOT_FOUND]: new NotFoundException("user not found"),
         }[err] ?? err
       );
-
-    if (profile === null) throw new NotFoundException("profile not found");
 
     return profile!;
   }
@@ -76,9 +64,7 @@ export class ProfileController {
     if (err !== undefined)
       throw (
         {
-          [Errors.PROFILE_NOT_FOUND]: new NotFoundException(
-            "profile not found",
-          ),
+          [Errors.USER_NOT_FOUND]: new NotFoundException("user not found"),
         }[err] ?? err
       );
   }

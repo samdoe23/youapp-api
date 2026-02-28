@@ -1,5 +1,3 @@
 export enum Errors {
-  AUTH_ID_NOT_FOUND,
-  PROFILE_REGISTERED,
-  PROFILE_NOT_FOUND,
+  USER_NOT_FOUND,
 }

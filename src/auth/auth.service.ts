@@ -3,7 +3,7 @@ import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "src/auth/dto/login.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
-import { Auth } from "src/auth/auth.schema";
+import { User } from "src/user/user.schema";
 import { hash } from "src/auth/hasher";
 import * as argon2 from "argon2";
 import { LoginError, RegisterError } from "src/auth/auth.errors";
@@ -13,7 +13,7 @@ import { JwtService } from "@nestjs/jwt";
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectModel(Auth.name) private authModel: Model<Auth>,
+    @InjectModel(User.name) private userModel: Model<User>,
     private jwtService: JwtService,
   ) {}
 
@@ -21,9 +21,9 @@ export class AuthService {
     const { password: plainPassword, ...identity } = registerDto;
     const hashedPassword = await hash(plainPassword);
 
-    await this.authModel.init();
+    await this.userModel.init();
     var [doc, err] = await ea(() =>
-      this.authModel.create({
+      this.userModel.create({
         ...identity,
         password: hashedPassword,
       }),
@@ -41,7 +41,7 @@ export class AuthService {
   }
 
   async login({ email, username, password }: LoginDto) {
-    const doc = await this.authModel.findOne(
+    const doc = await this.userModel.findOne(
       { $or: [{ email }, { username }] },
       { password: true },
     );
