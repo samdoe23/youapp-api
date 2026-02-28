@@ -1,18 +1,105 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
+import { Test, TestingModule } from "@nestjs/testing";
+import { AuthService } from "./auth.service";
+import {
+  getConnectionToken,
+  getModelToken,
+  MongooseModule,
+} from "@nestjs/mongoose";
+import { Auth, AuthSchema } from "src/auth/auth.schema";
+import { JwtModule, JwtService } from "@nestjs/jwt";
+import { RegisterDto } from "src/auth/dto/register.dto";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import Joi from "joi";
+import { Connection, Model } from "mongoose";
+import { RegisterError } from "src/auth/auth.errors";
+import { ea } from "src/common/go-err";
+import { Payload } from "src/jwt/jwt.payload";
 
-describe('AuthService', () => {
-  let service: AuthService;
+describe("AuthService", () => {
+  let authService: AuthService;
+  let authModel: Model<Auth>;
+  let jwtService: JwtService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          envFilePath: ".env.test",
+          isGlobal: true,
+          validationSchema: Joi.object({
+            MONGO_TEST_URI: Joi.string().required().uri(),
+          }),
+        }),
+        MongooseModule.forRootAsync({
+          inject: [ConfigService],
+          useFactory: (config: ConfigService) => ({
+            uri: config.get("MONGO_TEST_URI"),
+          }),
+        }),
+        MongooseModule.forFeature([{ name: Auth.name, schema: AuthSchema }]),
+        JwtModule.register({
+          secret: "TEST-SECRET",
+          signOptions: { expiresIn: "2h" },
+        }),
+      ],
       providers: [AuthService],
     }).compile();
 
-    service = module.get<AuthService>(AuthService);
+    const mongoc = module.get<Connection>(getConnectionToken());
+    await mongoc.dropDatabase();
+
+    authService = module.get(AuthService);
+    authModel = module.get(getModelToken(Auth.name));
+    jwtService = module.get(JwtService);
   });
 
-  it('should be defined', () => {
-    expect(service).toBeDefined();
+  it("should be defined", () => {
+    expect(authService).toBeDefined();
+  });
+
+  describe("register", () => {
+    let registerDto = new RegisterDto();
+
+    beforeEach(() => {
+      registerDto.email = "john@email.com";
+      registerDto.username = "john";
+      registerDto.password = "password123";
+    });
+
+    it("should return valid jwt sub", async () => {
+      jest.spyOn(authService, "register");
+
+      const jwt = await authService.register(registerDto);
+
+      const payload = jwtService.verify<Payload>(jwt);
+
+      const doc = await authModel.findOne({ username: registerDto.username });
+
+      expect(payload.sub).toBe(doc!.id);
+    });
+
+    it("should throw on email duplicates", async () => {
+      jest.spyOn(authService, "register");
+
+      await authService.register(registerDto);
+
+      registerDto.username = "john2";
+
+      var [_, err] = await ea(() => authService.register(registerDto));
+
+      expect(err).toBe(RegisterError.EMAIL_USED);
+    });
+
+    it("should throw on username duplicates", async () => {
+      jest.spyOn(authService, "register");
+
+      await authService.register(registerDto);
+
+      registerDto.email = "john2@email.com";
+
+      var [_, err] = await ea(() => authService.register(registerDto));
+
+      expect(err).toBe(RegisterError.USERNAME_USED);
+    });
   });
 });
