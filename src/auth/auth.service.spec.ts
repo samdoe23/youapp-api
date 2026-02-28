@@ -64,11 +64,11 @@ describe("AuthService", () => {
       registerDto.email = "john@email.com";
       registerDto.username = "john";
       registerDto.password = "password123";
+
+      jest.spyOn(authService, "register");
     });
 
     it("should return valid jwt sub", async () => {
-      jest.spyOn(authService, "register");
-
       const jwt = await authService.register(registerDto);
 
       const payload = jwtService.verify<Payload>(jwt);
@@ -79,8 +79,6 @@ describe("AuthService", () => {
     });
 
     it("should throw on email duplicates", async () => {
-      jest.spyOn(authService, "register");
-
       await authService.register(registerDto);
 
       registerDto.username = "john2";
@@ -91,8 +89,6 @@ describe("AuthService", () => {
     });
 
     it("should throw on username duplicates", async () => {
-      jest.spyOn(authService, "register");
-
       await authService.register(registerDto);
 
       registerDto.email = "john2@email.com";
