@@ -11,9 +11,11 @@ import { RegisterDto } from "src/auth/dto/register.dto";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import Joi from "joi";
 import { Connection, Model } from "mongoose";
-import { RegisterError } from "src/auth/auth.errors";
+import { LoginError, RegisterError } from "src/auth/auth.errors";
 import { ea } from "src/common/go-err";
 import { Payload } from "src/jwt/jwt.payload";
+import { LoginDto } from "src/auth/dto/login.dto";
+import { identity } from "rxjs";
 
 describe("AuthService", () => {
   let authService: AuthService;
@@ -96,6 +98,72 @@ describe("AuthService", () => {
       var [_, err] = await ea(() => authService.register(registerDto));
 
       expect(err).toBe(RegisterError.USERNAME_USED);
+    });
+  });
+
+  describe("login", () => {
+    let loginDto = new LoginDto();
+
+    beforeEach(async () => {
+      const registerDto = new RegisterDto();
+
+      registerDto.email = "john@email.com";
+      registerDto.username = "john";
+      registerDto.password = "password123";
+
+      loginDto = registerDto;
+
+      await authService.register(registerDto);
+
+      jest.spyOn(authService, "login");
+    });
+
+    describe("with email", () => {
+      beforeEach(() => {
+        const { password, ...identity } = loginDto;
+        loginDto = {
+          email: identity.email,
+          password,
+        };
+      });
+
+      it("should return valid jwt sub", async () => {
+        const jwt = await authService.login(loginDto);
+
+        const payload = jwtService.verify<Payload>(jwt);
+
+        const doc = await authModel.findOne({ email: loginDto.email });
+
+        expect(payload.sub).toBe(doc!.id);
+      });
+    });
+
+    describe("with username", () => {
+      beforeEach(() => {
+        const { password, ...identity } = loginDto;
+        loginDto = {
+          username: identity.username,
+          password,
+        };
+      });
+
+      it("should return valid jwt sub", async () => {
+        const jwt = await authService.login(loginDto);
+
+        const payload = jwtService.verify<Payload>(jwt);
+
+        const doc = await authModel.findOne({ username: loginDto.username });
+
+        expect(payload.sub).toBe(doc!.id);
+      });
+    });
+
+    it("should handle a non matching password", async () => {
+      loginDto.password = "wrong-password";
+
+      var [_, err] = await ea(() => authService.login(loginDto));
+
+      expect(err).toBe(LoginError.INVALID_PASSWORD);
     });
   });
 });
