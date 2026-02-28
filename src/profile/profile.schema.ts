@@ -12,6 +12,7 @@ export class Profile implements IProfile {
   name: string;
 
   @Prop({
+    type: Number,
     enum: Iso5218Sex,
   })
   isoSex: Iso5218Sex;
