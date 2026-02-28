@@ -15,7 +15,6 @@ import { LoginError, RegisterError } from "src/auth/auth.errors";
 import { ea } from "src/common/go-err";
 import { Payload } from "src/jwt/jwt.payload";
 import { LoginDto } from "src/auth/dto/login.dto";
-import { identity } from "rxjs";
 
 describe("AuthService", () => {
   let authService: AuthService;
