@@ -138,7 +138,6 @@ describe("ProfileService", () => {
 
   describe("update profile", () => {
     let createDto = new CreateProfileDto();
-    let updateDto = new UpdateProfileDto();
 
     beforeEach(async () => {
       createDto.name = "John Doe";
