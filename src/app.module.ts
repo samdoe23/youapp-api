@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import * as Joi from "joi";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AuthModule } from "./auth/auth.module";
+import { RabbitMQModule } from "./rabbitmq/rabbitmq.module";
+import { ChatModule } from "./chat/chat.module";
 
 @Module({
   imports: [
@@ -12,6 +14,7 @@ import { AuthModule } from "./auth/auth.module";
       validationSchema: Joi.object({
         MONGO_URI: Joi.string().required().uri(),
         JWT_SECRET: Joi.string().required(),
+        RABBITMQ_URL: Joi.string().uri(),
       }),
     }),
     MongooseModule.forRootAsync({
@@ -20,8 +23,10 @@ import { AuthModule } from "./auth/auth.module";
         uri: config.get("MONGO_URI"),
       }),
     }),
+    RabbitMQModule,
     ProfileModule,
     AuthModule,
+    ChatModule,
   ],
 })
 export class AppModule {}
