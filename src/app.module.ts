@@ -4,6 +4,8 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import * as Joi from "joi";
 import { MongooseModule } from "@nestjs/mongoose";
 import { AuthModule } from "./auth/auth.module";
+import { ChatModule } from "./chat/chat.module";
+import { JwtModule } from "@nestjs/jwt";
 
 @Module({
   imports: [
@@ -20,8 +22,17 @@ import { AuthModule } from "./auth/auth.module";
         uri: config.get("MONGO_URI"),
       }),
     }),
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      global: true,
+      useFactory: (config: ConfigService) => ({
+        secret: config.get("JWT_SECRET"),
+        signOptions: { expiresIn: "2h" },
+      }),
+    }),
     ProfileModule,
     AuthModule,
+    ChatModule,
   ],
 })
 export class AppModule {}
