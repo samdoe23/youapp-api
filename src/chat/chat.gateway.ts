@@ -21,8 +21,10 @@ export class ChatGateway {
   @InjectModel(Room.name)
   roomModel: Model<Room>;
 
+  chatroom = (room: Types.ObjectId) => `chat-${room}`;
+
   sendMessage(message: string, room: Types.ObjectId, by: Types.ObjectId) {
-    this.server.to(room.toString()).emit("messages", { by, message });
+    this.server.to(this.chatroom(room)).emit("messages", { by, message });
   }
 
   @UseGuards(WsJwtGuard)
@@ -49,6 +51,6 @@ export class ChatGateway {
       throw new WsException("no messages");
     }
 
-    client.join(roomDoc.id);
+    await client.join(this.chatroom(roomDoc._id));
   }
 }
