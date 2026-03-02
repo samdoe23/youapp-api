@@ -33,23 +33,21 @@ export class ChatGateway {
     @ConnectedSocket() client: Socket,
     @MessageBody() payload: { from: Types.ObjectId },
   ) {
-    const roomDoc = await this.roomModel.findOne(
+    const participants = [
+      new Types.ObjectId(payload.from),
+      new Types.ObjectId(client.data.user.sub),
+    ];
+
+    const roomDoc = await this.roomModel.findOneAndUpdate(
       {
         participants: {
-          $in: [
-            new Types.ObjectId(payload.from),
-            new Types.ObjectId(client.data.user.sub),
-          ],
+          $in: participants,
           $size: 2,
         },
       },
-      { id: true },
+      { participants },
+      { upsert: true, returnDocument: "after" },
     );
-
-    if (roomDoc === null) {
-      client.disconnect();
-      throw new WsException("no messages");
-    }
 
     await client.join(this.chatroom(roomDoc._id));
   }
