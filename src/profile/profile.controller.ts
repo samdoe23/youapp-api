@@ -27,7 +27,7 @@ export class ProfileController {
     @Req() req: Request & { user: Payload },
   ) {
     var [_, err] = await ea(() =>
-      this.profileService.create(createProfileDto, req.user.sub),
+      this.profileService.update(req.user.sub, createProfileDto),
     );
 
     if (err !== undefined)

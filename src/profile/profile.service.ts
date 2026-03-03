@@ -1,5 +1,4 @@
 import { Injectable } from "@nestjs/common";
-import { CreateProfileDto } from "./dto/create-profile.dto";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
@@ -11,15 +10,6 @@ export class ProfileService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
   ) {}
-
-  async create(createProfileDto: CreateProfileDto, userId: string) {
-    const { matchedCount } = await this.userModel.updateOne(
-      { _id: userId },
-      createProfileDto,
-    );
-
-    if (matchedCount < 1) throw Errors.USER_NOT_FOUND;
-  }
 
   async findOne(userId: string) {
     const user = await this.userModel.findById(userId, {
