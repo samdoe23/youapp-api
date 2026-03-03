@@ -13,21 +13,19 @@ import { Server, Socket } from "socket.io";
 import { SubscribeMessageDto } from "src/chat/dtos/subscribe-message.dto";
 import { Room } from "src/chat/room.schema";
 import { WsJwtGuard } from "src/jwt/jwt.guard";
-import { User } from "src/user/user.schema";
 import { UserService } from "src/user/user.service";
 
 @UsePipes(new ValidationPipe({ exceptionFactory: (e) => new WsException(e) }))
 @WebSocketGateway({ cors: { origin: "*" } })
 export class ChatGateway {
-  @WebSocketServer()
-  server: Server;
+  @WebSocketServer() private readonly server: Server;
 
-  @InjectModel(Room.name)
-  roomModel: Model<Room>;
+  constructor(
+    private readonly userService: UserService,
+    @InjectModel(Room.name) private readonly roomModel: Model<Room>,
+  ) {}
 
-  constructor(private readonly userService: UserService) {}
-
-  chatroom = (room: Types.ObjectId) => `chat-${room}`;
+  private readonly chatroom = (room: Types.ObjectId) => `chat-${room}`;
 
   sendMessage(message: string, room: Types.ObjectId, by: Types.ObjectId) {
     this.server.to(this.chatroom(room)).emit("messages", { by, message });

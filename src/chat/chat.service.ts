@@ -5,8 +5,10 @@ import { Room } from "src/chat/room.schema";
 
 @Injectable()
 export class ChatService {
-  @InjectModel(Room.name)
-  roomModel: Model<Room>;
+  constructor(
+    @InjectModel(Room.name)
+    private readonly roomModel: Model<Room>,
+  ) {}
 
   async saveMessage(by: Types.ObjectId, to: Types.ObjectId, content: string) {
     const participants = [by, to];

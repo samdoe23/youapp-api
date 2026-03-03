@@ -8,7 +8,9 @@ import { Errors } from "src/profile/profile.errors";
 
 @Injectable()
 export class ProfileService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private readonly userModel: Model<User>,
+  ) {}
 
   async create(createProfileDto: CreateProfileDto, userId: string) {
     const { matchedCount } = await this.userModel.updateOne(
