@@ -1,4 +1,4 @@
-import { UseGuards } from "@nestjs/common";
+import { UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import {
   ConnectedSocket,
@@ -10,9 +10,11 @@ import {
 } from "@nestjs/websockets";
 import { Model, Types } from "mongoose";
 import { Server, Socket } from "socket.io";
+import { SubscribeMessageDto } from "src/chat/dtos/subscribe-message.dto";
 import { Room } from "src/chat/room.schema";
 import { WsJwtGuard } from "src/jwt/jwt.guard";
 
+@UsePipes(new ValidationPipe({ exceptionFactory: (e) => new WsException(e) }))
 @WebSocketGateway({ cors: { origin: "*" } })
 export class ChatGateway {
   @WebSocketServer()
@@ -31,7 +33,7 @@ export class ChatGateway {
   @SubscribeMessage("messages")
   async subscribeMessage(
     @ConnectedSocket() client: Socket,
-    @MessageBody() payload: { from: Types.ObjectId },
+    @MessageBody() payload: SubscribeMessageDto,
   ) {
     const participants = [
       new Types.ObjectId(payload.from),

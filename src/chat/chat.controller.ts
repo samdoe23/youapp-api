@@ -2,7 +2,7 @@ import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
 import { Types } from "mongoose";
 import { ChatGateway } from "src/chat/chat.gateway";
 import { ChatService } from "src/chat/chat.service";
-import { MessageDto } from "src/chat/message.dto";
+import { SendMessageDto } from "src/chat/dtos/send-message.dto";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Payload } from "src/jwt/jwt.payload";
 
@@ -16,7 +16,7 @@ export class ChatController {
 
   @Post("/sendMessage")
   async sendMessage(
-    @Body() message: MessageDto,
+    @Body() message: SendMessageDto,
     @Req() req: Request & { user: Payload },
   ) {
     const roomId = await this.chatService.saveMessage(
