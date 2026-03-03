@@ -50,5 +50,7 @@ export class ChatGateway {
     );
 
     await client.join(this.chatroom(roomDoc._id));
+
+    return true;
   }
 }
