@@ -57,7 +57,7 @@ describe("ProfileService", () => {
     expect(service).toBeDefined();
   });
 
-  describe("create profile", () => {
+  describe("updates user", () => {
     let createDto = new CreateProfileDto();
 
     beforeEach(() => {
@@ -67,11 +67,11 @@ describe("ProfileService", () => {
       createDto.weightInKg = 60;
       createDto.isoSex = 1;
 
-      jest.spyOn(service, "create");
+      jest.spyOn(service, "update");
     });
 
     it("creates a profile", async () => {
-      await service.create(createDto, userId.toString());
+      await service.update(userId.toString(), createDto);
 
       const doc = await userModel.findById(userId, {
         name: true,
@@ -96,9 +96,9 @@ describe("ProfileService", () => {
       createDto.weightInKg = 60;
       createDto.isoSex = 1;
 
-      await service.create(createDto, userId.toString());
+      await service.update(userId.toString(), createDto);
 
-      jest.spyOn(service, "create");
+      jest.spyOn(service, "update");
     });
 
     it("reads an existing profile", async () => {
@@ -111,29 +111,6 @@ describe("ProfileService", () => {
 
       const doc = await service.findOne(userId.toString());
       expect(doc).toBeNull();
-    });
-  });
-
-  describe("update profile", () => {
-    let createDto = new CreateProfileDto();
-
-    beforeEach(async () => {
-      createDto.name = "John Doe";
-      createDto.birthday = new Date();
-      createDto.heightInCm = 160;
-      createDto.weightInKg = 60;
-      createDto.isoSex = 1;
-
-      await service.create(createDto, userId.toString());
-
-      jest.spyOn(service, "create");
-    });
-
-    it("succesfully updates height", async () => {
-      const newHeight = 165;
-      await service.update(userId.toString(), { heightInCm: newHeight });
-      const doc = await userModel.findByIdAndDelete(userId);
-      expect(doc!.heightInCm).toBe(newHeight);
     });
   });
 });
