@@ -13,6 +13,8 @@ import { Server, Socket } from "socket.io";
 import { SubscribeMessageDto } from "src/chat/dtos/subscribe-message.dto";
 import { Room } from "src/chat/room.schema";
 import { WsJwtGuard } from "src/jwt/jwt.guard";
+import { User } from "src/user/user.schema";
+import { UserService } from "src/user/user.service";
 
 @UsePipes(new ValidationPipe({ exceptionFactory: (e) => new WsException(e) }))
 @WebSocketGateway({ cors: { origin: "*" } })
@@ -22,6 +24,8 @@ export class ChatGateway {
 
   @InjectModel(Room.name)
   roomModel: Model<Room>;
+
+  constructor(private readonly userService: UserService) {}
 
   chatroom = (room: Types.ObjectId) => `chat-${room}`;
 
@@ -39,6 +43,11 @@ export class ChatGateway {
       new Types.ObjectId(payload.from),
       new Types.ObjectId(client.data.user.sub),
     ];
+
+    for (const p of participants) {
+      const userExists = await this.userService.exists(p);
+      if (!userExists) throw new WsException("user doesn't exist");
+    }
 
     const roomDoc = await this.roomModel.findOneAndUpdate(
       {
