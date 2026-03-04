@@ -28,7 +28,6 @@ export class ChatService {
   }
 
   async getMessages(participants: Types.ObjectId[]) {
-    console.log(participants);
     const room = await this.roomModel.findOne({
       participants: { $in: participants, $size: 2 },
     });
