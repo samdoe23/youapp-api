@@ -8,7 +8,15 @@ async function bootstrap() {
   SwaggerModule.setup("api", app, () =>
     SwaggerModule.createDocument(
       app,
-      new DocumentBuilder().setTitle("YouApp API").setVersion("1.0").build(),
+      new DocumentBuilder()
+        .setTitle("YouApp API")
+        .setVersion("1.0")
+        .addSecurity("accessTokenHeader", {
+          type: "apiKey",
+          in: "header",
+          name: "x-access-token",
+        })
+        .build(),
     ),
   );
   app.useGlobalPipes(new ValidationPipe());

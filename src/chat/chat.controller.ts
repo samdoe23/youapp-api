@@ -7,6 +7,7 @@ import {
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { ApiSecurity } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { ChatGateway } from "src/chat/chat.gateway";
 import { ChatService } from "src/chat/chat.service";
@@ -18,6 +19,7 @@ import { UserService } from "src/user/user.service";
 
 @Controller()
 @UseGuards(JwtGuard)
+@ApiSecurity("accessTokenHeader")
 export class ChatController {
   constructor(
     private readonly userService: UserService,

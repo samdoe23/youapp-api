@@ -15,7 +15,9 @@ import { ea } from "src/common/go-err";
 import { Payload } from "src/jwt/jwt.payload";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Errors } from "src/profile/profile.errors";
+import { ApiSecurity } from "@nestjs/swagger";
 
+@ApiSecurity("accessTokenHeader")
 @UseGuards(JwtGuard)
 @Controller()
 export class ProfileController {
