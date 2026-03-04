@@ -1,8 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsMongoId } from "class-validator";
+import { PickType } from "@nestjs/swagger";
+import { FullMessageDto } from "src/chat/dtos/full-message.dto";
 
-export class SubscribeMessageDto {
-  @ApiProperty()
-  @IsMongoId()
-  from: string;
-}
+export class SubscribeMessageDto extends PickType(FullMessageDto, ["from"]) {}

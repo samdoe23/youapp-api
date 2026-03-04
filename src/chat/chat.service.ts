@@ -26,4 +26,13 @@ export class ChatService {
 
     return doc._id;
   }
+
+  async getMessages(participants: Types.ObjectId[]) {
+    console.log(participants);
+    const room = await this.roomModel.findOne({
+      participants: { $in: participants, $size: 2 },
+    });
+
+    return room?.messages;
+  }
 }
