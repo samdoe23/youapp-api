@@ -1,7 +1,5 @@
-import { Length } from "class-validator";
+import { IntersectionType } from "@nestjs/mapped-types";
 import { IdentityDto } from "src/auth/dto/identity.dto";
+import { PasswordDto } from "src/auth/dto/password.dto";
 
-export class RegisterDto extends IdentityDto {
-  @Length(8, 64)
-  password: string;
-}
+export class RegisterDto extends IntersectionType(IdentityDto, PasswordDto) {}

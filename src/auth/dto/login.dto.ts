@@ -1,8 +1,8 @@
-import { PartialType } from "@nestjs/mapped-types";
-import { Length } from "class-validator";
+import { PartialType, IntersectionType } from "@nestjs/mapped-types";
 import { IdentityDto } from "src/auth/dto/identity.dto";
+import { PasswordDto } from "src/auth/dto/password.dto";
 
-export class LoginDto extends PartialType(IdentityDto) {
-  @Length(8, 64)
-  password: string;
-}
+export class LoginDto extends IntersectionType(
+  PartialType(IdentityDto),
+  PasswordDto,
+) {}
