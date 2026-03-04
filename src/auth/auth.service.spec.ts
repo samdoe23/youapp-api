@@ -10,7 +10,7 @@ import { RegisterDto } from "src/auth/dto/register.dto";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import Joi from "joi";
 import { Connection, Model } from "mongoose";
-import { LoginError, RegisterError } from "src/auth/auth.errors";
+import { AuthErrors } from "src/auth/auth.errors";
 import { ea } from "src/common/go-err";
 import { Payload } from "src/jwt/jwt.payload";
 import { LoginDto } from "src/auth/dto/login.dto";
@@ -86,7 +86,7 @@ describe("AuthService", () => {
 
       var [_, err] = await ea(() => authService.register(registerDto));
 
-      expect(err).toBe(RegisterError.EMAIL_USED);
+      expect(err).toBe(AuthErrors.EMAIL_USED);
     });
 
     it("should throw on username duplicates", async () => {
@@ -96,7 +96,7 @@ describe("AuthService", () => {
 
       var [_, err] = await ea(() => authService.register(registerDto));
 
-      expect(err).toBe(RegisterError.USERNAME_USED);
+      expect(err).toBe(AuthErrors.USERNAME_USED);
     });
   });
 
@@ -162,7 +162,24 @@ describe("AuthService", () => {
 
       var [_, err] = await ea(() => authService.login(loginDto));
 
-      expect(err).toBe(LoginError.INVALID_PASSWORD);
+      expect(err).toBe(AuthErrors.INVALID_PASSWORD);
+    });
+  });
+
+  describe("getUsername", () => {
+    it("should return correct username", async () => {
+      const registerDto = new RegisterDto();
+
+      registerDto.email = "john@email.com";
+      registerDto.username = "john";
+      registerDto.password = "password123";
+
+      const { _id } = await userModel.create(registerDto);
+
+      jest.spyOn(authService, "getUsername");
+
+      const username = await authService.getUsername(_id);
+      expect(username).toStrictEqual(registerDto.username);
     });
   });
 });

@@ -2,11 +2,11 @@ import { Injectable } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "src/auth/dto/login.dto";
 import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { User } from "src/user/user.schema";
 import { hash } from "src/auth/hasher";
 import * as argon2 from "argon2";
-import { LoginError, RegisterError } from "src/auth/auth.errors";
+import { AuthErrors } from "src/auth/auth.errors";
 import { ea } from "src/common/go-err";
 import { JwtService } from "@nestjs/jwt";
 
@@ -32,8 +32,8 @@ export class AuthService {
     if (err !== undefined && err.code === 11000)
       throw (
         {
-          username: RegisterError.USERNAME_USED,
-          email: RegisterError.EMAIL_USED,
+          username: AuthErrors.USERNAME_USED,
+          email: AuthErrors.EMAIL_USED,
         }[Object.keys(err.keyPattern)[0]] ?? err
       );
 
@@ -46,11 +46,19 @@ export class AuthService {
       { password: true },
     );
 
-    if (doc === null) throw LoginError.NOT_FOUND;
+    if (doc === null) throw AuthErrors.NOT_FOUND;
 
     const passwordMatches = await argon2.verify(doc!.password, password);
-    if (!passwordMatches) throw LoginError.INVALID_PASSWORD;
+    if (!passwordMatches) throw AuthErrors.INVALID_PASSWORD;
 
     return await this.jwtService.signAsync({ sub: doc!.id });
+  }
+
+  async getUsername(id: Types.ObjectId) {
+    const doc = await this.userModel.findById(id, { username: true });
+
+    if (doc === null) throw AuthErrors.NOT_FOUND;
+
+    return doc.username;
   }
 }

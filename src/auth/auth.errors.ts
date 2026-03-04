@@ -1,9 +1,6 @@
-export enum LoginError {
+export enum AuthErrors {
   INVALID_PASSWORD,
   NOT_FOUND,
-}
-
-export enum RegisterError {
   EMAIL_USED,
   USERNAME_USED,
 }

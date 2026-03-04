@@ -5,12 +5,15 @@ import {
   ConflictException,
   ForbiddenException,
   NotFoundException,
+  Param,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "src/auth/dto/login.dto";
 import { ea } from "src/common/go-err";
-import { LoginError, RegisterError } from "src/auth/auth.errors";
+import { AuthErrors } from "src/auth/auth.errors";
+import { Types } from "mongoose";
+import { ParseObjectIdPipe } from "@nestjs/mongoose";
 
 @Controller()
 export class AuthController {
@@ -23,10 +26,10 @@ export class AuthController {
     if (err !== undefined)
       throw (
         {
-          [RegisterError.EMAIL_USED]: new ConflictException(
+          [AuthErrors.EMAIL_USED]: new ConflictException(
             "email is already in use",
           ),
-          [RegisterError.USERNAME_USED]: new ConflictException(
+          [AuthErrors.USERNAME_USED]: new ConflictException(
             "username is already in use",
           ),
         }[err] ?? err
@@ -42,15 +45,30 @@ export class AuthController {
     if (err !== undefined)
       throw (
         {
-          [LoginError.INVALID_PASSWORD]: new ForbiddenException(
+          [AuthErrors.INVALID_PASSWORD]: new ForbiddenException(
             "unmatched credentials",
           ),
-          [LoginError.NOT_FOUND]: new NotFoundException(
+          [AuthErrors.NOT_FOUND]: new NotFoundException(
             "email or username not found",
           ),
         }[err] ?? err
       );
 
     return jwt;
+  }
+
+  @Post("/getUsername/:id")
+  async getUsername(
+    @Param("id", ParseObjectIdPipe)
+    id: string,
+  ) {
+    var [username, err] = await ea(() =>
+      this.authService.getUsername(new Types.ObjectId(id)),
+    );
+
+    if (err === AuthErrors.NOT_FOUND)
+      throw new NotFoundException("user not found");
+
+    return username!;
   }
 }
