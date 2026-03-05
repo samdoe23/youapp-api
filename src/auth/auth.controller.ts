@@ -6,6 +6,7 @@ import {
   ForbiddenException,
   NotFoundException,
   Param,
+  Get,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
@@ -57,7 +58,7 @@ export class AuthController {
     return jwt;
   }
 
-  @Post("/getUsername/:id")
+  @Get("/getUsername/:id")
   async getUsername(
     @Param("id", ParseObjectIdPipe)
     id: string,
