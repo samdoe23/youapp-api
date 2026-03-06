@@ -181,22 +181,22 @@ describe("AuthService", () => {
       const username = await authService.getUsername(_id);
       expect(username).toStrictEqual(registerDto.username);
     });
+  });
 
-    describe("getId", () => {
-      it("should return correct username", async () => {
-        const registerDto = new RegisterDto();
+  describe("getId", () => {
+    it("should return correct id", async () => {
+      const registerDto = new RegisterDto();
 
-        registerDto.email = "john@email.com";
-        registerDto.username = "john";
-        registerDto.password = "password123";
+      registerDto.email = "john@email.com";
+      registerDto.username = "john";
+      registerDto.password = "password123";
 
-        const { _id } = await userModel.create(registerDto);
+      const { _id } = await userModel.create(registerDto);
 
-        jest.spyOn(authService, "getId");
+      jest.spyOn(authService, "getId");
 
-        const id = await authService.getId(registerDto.username);
-        expect(id).toStrictEqual(_id);
-      });
+      const id = await authService.getId(registerDto.username);
+      expect(id).toStrictEqual(_id);
     });
   });
 });
