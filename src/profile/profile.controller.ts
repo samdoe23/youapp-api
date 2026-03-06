@@ -20,11 +20,11 @@ import { ApiSecurity } from "@nestjs/swagger";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
 
 @ApiSecurity("accessTokenHeader")
-@UseGuards(JwtGuard)
 @Controller()
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
+  @UseGuards(JwtGuard)
   @Post("createProfile")
   async create(
     @Body() createProfileDto: CreateProfileDto,
@@ -56,6 +56,7 @@ export class ProfileController {
     return profile!;
   }
 
+  @UseGuards(JwtGuard)
   @Patch("updateProfile")
   async update(
     @Body() updateProfileDto: UpdateProfileDto,
