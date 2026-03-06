@@ -13,16 +13,17 @@ export class ChatService {
   async saveMessage(by: Types.ObjectId, to: Types.ObjectId, content: string) {
     const participants = [by, to];
 
-    const doc = await this.roomModel.findOneAndUpdate(
-      {
+    let doc =
+      (await this.roomModel.findOne({
         participants: { $all: participants, $size: 2 },
-      },
-      {
+      })) ??
+      (await this.roomModel.create({
         participants,
-        $push: { messages: { by, content } },
-      },
-      { upsert: true, returnDocument: "after" },
-    );
+      }));
+
+    await doc.updateOne({
+      $push: { messages: { by, content } },
+    });
 
     return doc._id;
   }
