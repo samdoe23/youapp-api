@@ -7,6 +7,7 @@ import {
   Patch,
   NotFoundException,
   UseGuards,
+  Param,
 } from "@nestjs/common";
 import { ProfileService } from "./profile.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
@@ -16,6 +17,7 @@ import { Payload } from "src/jwt/jwt.payload";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Errors } from "src/profile/profile.errors";
 import { ApiSecurity } from "@nestjs/swagger";
+import { ParseObjectIdPipe } from "@nestjs/mongoose";
 
 @ApiSecurity("accessTokenHeader")
 @UseGuards(JwtGuard)
@@ -40,8 +42,8 @@ export class ProfileController {
       );
   }
 
-  @Get("getProfile")
-  async findOne(@Req() { user: { sub: authId } }: { user: Payload }) {
+  @Get("getProfile/:id")
+  async findOne(@Param("id", ParseObjectIdPipe) authId: string) {
     var [profile, err] = await ea(() => this.profileService.findOne(authId));
 
     if (err !== undefined)
