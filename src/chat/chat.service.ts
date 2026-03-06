@@ -35,4 +35,15 @@ export class ChatService {
 
     return room?.messages;
   }
+
+  async getRoomIds(participants: Types.ObjectId[]) {
+    const rooms = await this.roomModel.find(
+      {
+        participants: { $all: participants, $size: 2 },
+      },
+      { _id: true },
+    );
+
+    return rooms.map((r) => r._id);
+  }
 }

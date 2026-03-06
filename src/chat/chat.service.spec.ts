@@ -18,6 +18,7 @@ describe("ChatService", () => {
   let roomModel: Model<Room>;
   let jwtService: JwtService;
   let johnId: Types.ObjectId;
+  let janeId: Types.ObjectId;
   let samId: Types.ObjectId;
 
   beforeEach(async () => {
@@ -69,6 +70,14 @@ describe("ChatService", () => {
         username: "sam",
       })
     )._id;
+
+    janeId = (
+      await userModel.create({
+        email: "jane@email.com",
+        password: "password123",
+        username: "jane",
+      })
+    )._id;
   });
 
   it("should be defined", () => {
@@ -105,6 +114,29 @@ describe("ChatService", () => {
       expect(messages).toHaveLength(2);
       expect(messages).toContainEqual({ by: johnId, content: johnMessage });
       expect(messages).toContainEqual({ by: samId, content: samMessage });
+    });
+  });
+
+  describe("getRooms", () => {
+    it("should view rooms", async () => {
+      const johnMessage = "hi";
+      const janeMessage = "hey";
+      await chatService.saveMessage(johnId, samId, johnMessage);
+      await chatService.saveMessage(janeId, samId, janeMessage);
+      await chatService.saveMessage(janeId, johnId, janeMessage);
+
+      const samRooms = await chatService.getRoomIds([samId]);
+      const samJohnChatroom = await chatService.getRoomIds([samId, johnId]);
+      const samJaneChatroom = await chatService.getRoomIds([samId, janeId]);
+      const johnJaneChatroom = await chatService.getRoomIds([johnId, janeId]);
+
+      expect(samRooms).toHaveLength(2);
+      expect(samJohnChatroom).toHaveLength(1);
+      expect(samJaneChatroom).toHaveLength(1);
+      expect(johnJaneChatroom).toHaveLength(1);
+      expect(samRooms).toContainEqual(samJohnChatroom[0]);
+      expect(samRooms).toContainEqual(samJaneChatroom[0]);
+      expect(samRooms).not.toContainEqual(johnJaneChatroom[0]);
     });
   });
 });

@@ -77,4 +77,13 @@ export class ChatController {
 
     return messages;
   }
+
+  @Get("/viewRooms")
+  async viewRooms(@Req() req: Request & { user: Payload }) {
+    const rooms = await this.chatService.getRoomIds([
+      new Types.ObjectId(req.user.sub),
+    ]);
+
+    return rooms;
+  }
 }
