@@ -72,4 +72,17 @@ export class AuthController {
 
     return username!;
   }
+
+  @Get("/getId/:username")
+  async getId(
+    @Param("username")
+    username: string,
+  ) {
+    var [id, err] = await ea(() => this.authService.getId(username));
+
+    if (err === AuthErrors.NOT_FOUND)
+      throw new NotFoundException("user not found");
+
+    return id!;
+  }
 }

@@ -61,4 +61,12 @@ export class AuthService {
 
     return doc.username;
   }
+
+  async getId(username: string) {
+    const doc = await this.userModel.findOne({ username });
+
+    if (doc === null) throw AuthErrors.NOT_FOUND;
+
+    return doc._id;
+  }
 }
