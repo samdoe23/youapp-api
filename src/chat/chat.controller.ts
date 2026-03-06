@@ -3,10 +3,12 @@ import {
   Controller,
   Get,
   NotFoundException,
+  Param,
   Post,
   Req,
   UseGuards,
 } from "@nestjs/common";
+import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import { ApiSecurity } from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { ChatGateway } from "src/chat/chat.gateway";
@@ -60,14 +62,14 @@ export class ChatController {
     );
   }
 
-  @Get("/viewMessages")
+  @Get("/viewMessages/:from")
   async viewMessages(
-    @Body() viewMesssagesDto: ViewMessagesDto,
+    @Param("from", ParseObjectIdPipe) from: string,
     @Req() req: Request & { user: Payload },
   ) {
     const participants: [by: Types.ObjectId, to: Types.ObjectId] = [
       new Types.ObjectId(req.user.sub),
-      new Types.ObjectId(viewMesssagesDto.from),
+      new Types.ObjectId(from),
     ];
 
     if (!this.participantsExist(participants))
