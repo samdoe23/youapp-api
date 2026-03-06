@@ -15,7 +15,7 @@ export class ChatService {
 
     const doc = await this.roomModel.findOneAndUpdate(
       {
-        participants: { $in: participants, $size: 2 },
+        participants: { $all: participants, $size: 2 },
       },
       {
         participants,
@@ -29,7 +29,7 @@ export class ChatService {
 
   async getMessages(participants: Types.ObjectId[]) {
     const room = await this.roomModel.findOne({
-      participants: { $in: participants, $size: 2 },
+      participants: { $all: participants, $size: 2 },
     });
 
     return room?.messages;

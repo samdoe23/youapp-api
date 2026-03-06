@@ -47,18 +47,28 @@ export class ChatGateway {
       if (!userExists) throw new WsException("user doesn't exist");
     }
 
-    const roomDoc = await this.roomModel.findOneAndUpdate(
+    let roomId: Types.ObjectId;
+
+    const roomDoc = await this.roomModel.findOne(
       {
         participants: {
-          $in: participants,
+          $all: participants,
           $size: 2,
         },
       },
-      { participants },
-      { upsert: true, returnDocument: "after" },
+      { _id: true },
     );
 
-    await client.join(this.chatroom(roomDoc._id));
+    if (roomDoc === null) {
+      const { _id } = await this.roomModel.create({
+        participants: participants,
+      });
+      roomId = _id;
+    } else {
+      roomId = roomDoc._id;
+    }
+
+    await client.join(this.chatroom(roomId));
 
     return true;
   }

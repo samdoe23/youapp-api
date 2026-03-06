@@ -80,7 +80,7 @@ describe("ChatService", () => {
       const msg = "hi";
       await chatService.saveMessage(johnId, samId, msg);
       const room = await roomModel.findOne({
-        participants: { $in: [johnId, samId], $size: 2 },
+        participants: { $all: [johnId, samId], $size: 2 },
       });
 
       expect(room).not.toBeNull();
