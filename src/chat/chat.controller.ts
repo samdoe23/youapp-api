@@ -84,6 +84,11 @@ export class ChatController {
       new Types.ObjectId(req.user.sub),
     ]);
 
-    return rooms;
+    return rooms.map(({ _id, participants }) => ({
+      id: _id,
+      participants: participants
+        .map((p) => p.toString())
+        .filter((p) => p !== req.user.sub),
+    }));
   }
 }

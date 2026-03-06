@@ -41,9 +41,9 @@ export class ChatService {
       {
         participants: { $all: participants, $size: 2 },
       },
-      { _id: true },
+      { _id: true, participants: true },
     );
 
-    return rooms.map((r) => r._id);
+    return rooms;
   }
 }
