@@ -83,6 +83,6 @@ export class AuthController {
     if (err === AuthErrors.NOT_FOUND)
       throw new NotFoundException("user not found");
 
-    return id!;
+    return id!.toString();
   }
 }
