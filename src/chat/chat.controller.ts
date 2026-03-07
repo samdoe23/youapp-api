@@ -14,7 +14,6 @@ import { Types } from "mongoose";
 import { ChatGateway } from "src/chat/chat.gateway";
 import { ChatService } from "src/chat/chat.service";
 import { SendMessageDto } from "src/chat/dtos/send-message.dto";
-import { ViewMessagesDto } from "src/chat/dtos/view-messages.dto";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Payload } from "src/jwt/jwt.payload";
 import { UserService } from "src/user/user.service";
