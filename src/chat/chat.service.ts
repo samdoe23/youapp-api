@@ -10,10 +10,20 @@ export class ChatService {
     private readonly roomModel: Model<Room>,
   ) {}
 
-  async saveMessage(by: Types.ObjectId, to: Types.ObjectId, content: string) {
+  async saveMessage({
+    by,
+    to,
+    content,
+    timestamp = new Date(),
+  }: {
+    by: Types.ObjectId;
+    to: Types.ObjectId;
+    content: string;
+    timestamp?: Date;
+  }) {
     const participants = [by, to];
 
-    let doc =
+    let roomDoc =
       (await this.roomModel.findOne({
         participants: { $all: participants, $size: 2 },
       })) ??
@@ -21,11 +31,11 @@ export class ChatService {
         participants,
       }));
 
-    await doc.updateOne({
-      $push: { messages: { by, content } },
+    await roomDoc.updateOne({
+      $push: { messages: { by, content, timestamp } },
     });
 
-    return doc._id;
+    return roomDoc;
   }
 
   async getMessages(participants: Types.ObjectId[]) {

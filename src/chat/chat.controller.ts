@@ -42,24 +42,23 @@ export class ChatController {
     @Body() message: SendMessageDto,
     @Req() req: Request & { user: Payload },
   ) {
-    const participants: [by: Types.ObjectId, to: Types.ObjectId] = [
-      new Types.ObjectId(req.user.sub),
-      new Types.ObjectId(message.to),
-    ];
+    const by = new Types.ObjectId(req.user.sub);
+    const to = new Types.ObjectId(message.to);
+    const content = message.content;
+    const timestamp = new Date();
+    const participants: [by: Types.ObjectId, to: Types.ObjectId] = [by, to];
 
     if (!this.participantsExist(participants))
       throw new NotFoundException("user doesn't exist");
 
-    const roomId = await this.chatService.saveMessage(
-      ...participants,
-      message.content,
-    );
+    const room = await this.chatService.saveMessage({
+      by,
+      to,
+      content,
+      timestamp,
+    });
 
-    this.chatGateway.sendMessage(
-      message.content,
-      roomId,
-      new Types.ObjectId(req.user.sub),
-    );
+    this.chatGateway.sendMessage({ by, content, timestamp }, room._id);
   }
 
   @Get("/viewMessages/:from")

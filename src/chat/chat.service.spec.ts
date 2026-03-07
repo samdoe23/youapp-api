@@ -9,7 +9,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import Joi from "joi";
 import { Connection, Model, Types } from "mongoose";
 import { ChatService } from "src/chat/chat.service";
-import { Room, RoomSchema } from "src/chat/room.schema";
+import { Message, Room, RoomSchema } from "src/chat/room.schema";
 import { User, UserSchema } from "src/user/user.schema";
 
 describe("ChatService", () => {
@@ -86,8 +86,13 @@ describe("ChatService", () => {
 
   describe("saveMessage", () => {
     it("should save messages", async () => {
-      const msg = "hi";
-      await chatService.saveMessage(johnId, samId, msg);
+      const message = {
+        by: johnId,
+        to: samId,
+        content: "hi",
+        timestamp: new Date(),
+      };
+      await chatService.saveMessage(message);
       const room = await roomModel.findOne({
         participants: { $all: [johnId, samId], $size: 2 },
       });
@@ -99,31 +104,58 @@ describe("ChatService", () => {
       expect(room?.participants).toContainEqual(samId);
 
       expect(room?.messages).toHaveLength(1);
-      expect(room?.messages).toContainEqual({ by: johnId, content: msg });
+      expect(room?.messages).toContainEqual(new Message(message));
     });
   });
 
   describe("getMessages", () => {
     it("should view messages", async () => {
-      const johnMessage = "hi";
-      const samMessage = "hello";
-      await chatService.saveMessage(johnId, samId, johnMessage);
-      await chatService.saveMessage(samId, samId, samMessage);
+      const johnMessage = {
+        by: johnId,
+        to: samId,
+        content: "hi",
+        timestamp: new Date(),
+      };
+      const samMessage = {
+        by: samId,
+        to: johnId,
+        content: "hello",
+        timestamp: new Date(),
+      };
+      await chatService.saveMessage(johnMessage);
+      await chatService.saveMessage(samMessage);
       const messages = await chatService.getMessages([johnId, samId]);
 
       expect(messages).toHaveLength(2);
-      expect(messages).toContainEqual({ by: johnId, content: johnMessage });
-      expect(messages).toContainEqual({ by: samId, content: samMessage });
+      expect(messages).toContainEqual(new Message(johnMessage));
+      expect(messages).toContainEqual(new Message(samMessage));
     });
   });
 
   describe("getRooms", () => {
     it("should view rooms", async () => {
-      const johnMessage = "hi";
-      const janeMessage = "hey";
-      await chatService.saveMessage(johnId, samId, johnMessage);
-      await chatService.saveMessage(janeId, samId, janeMessage);
-      await chatService.saveMessage(janeId, johnId, janeMessage);
+      const msg1 = {
+        by: johnId,
+        to: samId,
+        content: "hi",
+        timestamp: new Date(),
+      };
+      const msg2 = {
+        by: janeId,
+        to: samId,
+        content: "hey",
+        timestamp: new Date(),
+      };
+      const msg3 = {
+        by: janeId,
+        to: johnId,
+        content: "hello",
+        timestamp: new Date(),
+      };
+
+      await chatService.saveMessage(msg1);
+      await chatService.saveMessage(msg2);
+      await chatService.saveMessage(msg3);
 
       const samRooms = await chatService.getRoomIds([samId]);
       const samJohnChatroom = await chatService.getRoomIds([samId, johnId]);

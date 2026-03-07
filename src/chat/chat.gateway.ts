@@ -11,7 +11,7 @@ import {
 import { Model, Types } from "mongoose";
 import { Server, Socket } from "socket.io";
 import { SubscribeMessageDto } from "src/chat/dtos/subscribe-message.dto";
-import { Room } from "src/chat/room.schema";
+import { Message, Room } from "src/chat/room.schema";
 import { WsJwtGuard } from "src/jwt/jwt.guard";
 import { UserService } from "src/user/user.service";
 
@@ -27,8 +27,8 @@ export class ChatGateway {
 
   private readonly chatroom = (room: Types.ObjectId) => `chat-${room}`;
 
-  sendMessage(message: string, room: Types.ObjectId, by: Types.ObjectId) {
-    this.server.to(this.chatroom(room)).emit("messages", { by, message });
+  sendMessage(message: Message, room: Types.ObjectId) {
+    this.server.to(this.chatroom(room)).emit("messages", message);
   }
 
   @UseGuards(WsJwtGuard)
