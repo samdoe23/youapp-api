@@ -1,6 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { ValidationPipe } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
@@ -21,6 +21,11 @@ async function bootstrap() {
   );
   app.useGlobalPipes(new ValidationPipe());
   app.enableCors();
-  await app.listen(process.env.PORT ?? 3000, process.env.HOST ?? "localhost");
+
+  const host = process.env.HOST ?? "localhost";
+  const port = process.env.PORT ?? 3000;
+  const logger = new Logger("Bootstrap");
+  await app.listen(port, host);
+  logger.log(`Listening on ${host}:${port}`);
 }
 bootstrap();
