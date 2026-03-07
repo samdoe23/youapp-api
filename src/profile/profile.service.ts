@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { UpdateProfileDto } from "./dto/update-profile.dto";
+import { PartialProfileDto } from "./dto/partial-profile.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { User } from "src/user/user.schema";
@@ -23,7 +23,7 @@ export class ProfileService {
     return user;
   }
 
-  async update(userId: string, updateProfileDto: UpdateProfileDto) {
+  async update(userId: string, updateProfileDto: PartialProfileDto) {
     const { matchedCount } = await this.userModel.updateOne(
       { _id: userId },
       updateProfileDto,

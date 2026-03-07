@@ -4,7 +4,7 @@ import { IProfile } from "src/auth/profile.interface";
 import { Iso5218Sex } from "src/auth/iso-5218-sex.enum";
 import { ApiProperty } from "@nestjs/swagger";
 
-export class CreateProfileDto implements IProfile {
+export class ProfileDto implements IProfile {
   @ApiProperty()
   @IsString()
   @Length(3, 64)

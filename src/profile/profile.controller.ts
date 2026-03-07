@@ -10,8 +10,8 @@ import {
   Param,
 } from "@nestjs/common";
 import { ProfileService } from "./profile.service";
-import { CreateProfileDto } from "./dto/create-profile.dto";
-import { UpdateProfileDto } from "./dto/update-profile.dto";
+import { ProfileDto } from "./dto/profile.dto";
+import { PartialProfileDto } from "./dto/partial-profile.dto";
 import { ea } from "src/common/go-err";
 import { Payload } from "src/jwt/jwt.payload";
 import { JwtGuard } from "src/jwt/jwt.guard";
@@ -27,7 +27,7 @@ export class ProfileController {
   @UseGuards(JwtGuard)
   @Post("createProfile")
   async create(
-    @Body() createProfileDto: CreateProfileDto,
+    @Body() createProfileDto: ProfileDto,
     @Req() req: Request & { user: Payload },
   ) {
     var [_, err] = await ea(() =>
@@ -43,7 +43,9 @@ export class ProfileController {
   }
 
   @Get("getProfile/:id")
-  async findOne(@Param("id", ParseObjectIdPipe) authId: string) {
+  async findOne(
+    @Param("id", ParseObjectIdPipe) authId: string,
+  ): Promise<PartialProfileDto> {
     var [profile, err] = await ea(() => this.profileService.findOne(authId));
 
     if (err !== undefined)
@@ -59,7 +61,7 @@ export class ProfileController {
   @UseGuards(JwtGuard)
   @Patch("updateProfile")
   async update(
-    @Body() updateProfileDto: UpdateProfileDto,
+    @Body() updateProfileDto: PartialProfileDto,
     @Req() { user: { sub: authId } }: { user: Payload },
   ) {
     var [_, err] = await ea(() =>

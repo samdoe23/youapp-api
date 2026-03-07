@@ -7,7 +7,7 @@ import {
   getModelToken,
   MongooseModule,
 } from "@nestjs/mongoose";
-import { CreateProfileDto } from "src/profile/dto/create-profile.dto";
+import { ProfileDto } from "src/profile/dto/profile.dto";
 import { Connection, Model, Types } from "mongoose";
 import { User, UserSchema } from "src/user/user.schema";
 
@@ -58,7 +58,7 @@ describe("ProfileService", () => {
   });
 
   describe("updates user", () => {
-    let createDto = new CreateProfileDto();
+    let createDto = new ProfileDto();
 
     beforeEach(() => {
       createDto.name = "John Doe";
@@ -87,7 +87,7 @@ describe("ProfileService", () => {
   });
 
   describe("read profile", () => {
-    let createDto = new CreateProfileDto();
+    let createDto = new ProfileDto();
 
     beforeEach(async () => {
       createDto.name = "John Doe";

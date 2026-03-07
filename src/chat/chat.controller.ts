@@ -14,6 +14,8 @@ import { Types } from "mongoose";
 import { ChatGateway } from "src/chat/chat.gateway";
 import { ChatService } from "src/chat/chat.service";
 import { SendMessageDto } from "src/chat/dtos/send-message.dto";
+import { ViewMessagesDto } from "src/chat/dtos/view-messages.dto";
+import { ViewRoomsDto } from "src/chat/dtos/view-rooms.dto";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Payload } from "src/jwt/jwt.payload";
 import { UserService } from "src/user/user.service";
@@ -64,7 +66,7 @@ export class ChatController {
   async viewMessages(
     @Param("from", ParseObjectIdPipe) from: string,
     @Req() req: Request & { user: Payload },
-  ) {
+  ): Promise<ViewMessagesDto[]> {
     const participants: [by: Types.ObjectId, to: Types.ObjectId] = [
       new Types.ObjectId(req.user.sub),
       new Types.ObjectId(from),
@@ -79,16 +81,16 @@ export class ChatController {
   }
 
   @Get("/viewRooms")
-  async viewRooms(@Req() req: Request & { user: Payload }) {
+  async viewRooms(
+    @Req() req: Request & { user: Payload },
+  ): Promise<ViewRoomsDto[]> {
     const rooms = await this.chatService.getRoomIds([
       new Types.ObjectId(req.user.sub),
     ]);
 
     return rooms.map(({ _id, participants }) => ({
       id: _id,
-      participants: participants
-        .map((p) => p.toString())
-        .filter((p) => p !== req.user.sub),
+      participants: participants.filter((p) => p.toString() !== req.user.sub),
     }));
   }
 }
