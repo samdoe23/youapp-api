@@ -6,6 +6,8 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { AuthModule } from "./auth/auth.module";
 import { ChatModule } from "./chat/chat.module";
 import { JwtModule } from "@nestjs/jwt";
+import { ServeStaticModule } from "@nestjs/serve-static";
+import { join } from "path";
 
 @Module({
   imports: [
@@ -29,6 +31,10 @@ import { JwtModule } from "@nestjs/jwt";
         secret: config.get("JWT_SECRET"),
         signOptions: { expiresIn: "2h" },
       }),
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, "..", "swagger-for-vercel"),
+      serveRoot: "/swagger-for-vercel",
     }),
     ProfileModule,
     AuthModule,
