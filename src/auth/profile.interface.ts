@@ -1,4 +1,4 @@
-import { Iso5218Sex } from "src/auth/iso-5218-sex.enum";
+import { Iso5218Sex } from "./iso-5218-sex.enum";
 
 export interface IProfile {
   name: string;

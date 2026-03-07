@@ -2,8 +2,8 @@ import { Module } from "@nestjs/common";
 import { ProfileService } from "./profile.service";
 import { ProfileController } from "./profile.controller";
 import { MongooseModule } from "@nestjs/mongoose";
-import { User, UserSchema } from "src/user/user.schema";
-import { JwtStrategy } from "src/jwt/jwt.strategy";
+import { User, UserSchema } from "../user/user.schema";
+import { JwtStrategy } from "../jwt/jwt.strategy";
 
 @Module({
   imports: [

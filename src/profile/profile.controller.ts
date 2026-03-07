@@ -12,12 +12,12 @@ import {
 import { ProfileService } from "./profile.service";
 import { CreateProfileDto } from "./dto/create-profile.dto";
 import { UpdateProfileDto } from "./dto/update-profile.dto";
-import { ea } from "src/common/go-err";
-import { Payload } from "src/jwt/jwt.payload";
-import { JwtGuard } from "src/jwt/jwt.guard";
-import { Errors } from "src/profile/profile.errors";
 import { ApiSecurity } from "@nestjs/swagger";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
+import { JwtGuard } from "../jwt/jwt.guard";
+import { Payload } from "../jwt/jwt.payload";
+import { ea } from "../common/go-err";
+import { Errors } from "./profile.errors";
 
 @ApiSecurity("accessTokenHeader")
 @Controller()

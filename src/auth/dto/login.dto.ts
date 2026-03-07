@@ -1,6 +1,6 @@
 import { IntersectionType, PartialType } from "@nestjs/swagger";
-import { IdentityDto } from "src/auth/dto/identity.dto";
-import { PasswordDto } from "src/auth/dto/password.dto";
+import { IdentityDto } from "./identity.dto";
+import { PasswordDto } from "./password.dto";
 
 export class LoginDto extends IntersectionType(
   PartialType(IdentityDto),

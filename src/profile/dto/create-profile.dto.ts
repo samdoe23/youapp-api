@@ -1,8 +1,8 @@
 import { Type } from "class-transformer";
 import { IsDate, IsEnum, IsPositive, IsString, Length } from "class-validator";
-import { IProfile } from "src/auth/profile.interface";
-import { Iso5218Sex } from "src/auth/iso-5218-sex.enum";
 import { ApiProperty } from "@nestjs/swagger";
+import { IProfile } from "../../auth/profile.interface";
+import { Iso5218Sex } from "../../auth/iso-5218-sex.enum";
 
 export class CreateProfileDto implements IProfile {
   @ApiProperty()

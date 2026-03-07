@@ -8,9 +8,9 @@ import {
 import { Test, TestingModule } from "@nestjs/testing";
 import Joi from "joi";
 import { Connection, Model, Types } from "mongoose";
-import { ChatService } from "src/chat/chat.service";
-import { Message, Room, RoomSchema } from "src/chat/room.schema";
-import { User, UserSchema } from "src/user/user.schema";
+import { User, UserSchema } from "../user/user.schema";
+import { ChatService } from "./chat.service";
+import { Message, Room, RoomSchema } from "./room.schema";
 
 describe("ChatService", () => {
   let chatService: ChatService;

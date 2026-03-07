@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Iso5218Sex } from "src/auth/iso-5218-sex.enum";
+import { Iso5218Sex } from "../auth/iso-5218-sex.enum";
 
 @Schema()
 export class User {

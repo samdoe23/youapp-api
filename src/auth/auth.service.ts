@@ -1,14 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { RegisterDto } from "./dto/register.dto";
-import { LoginDto } from "src/auth/dto/login.dto";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, Types } from "mongoose";
-import { User } from "src/user/user.schema";
-import { hash } from "src/auth/hasher";
 import * as argon2 from "argon2";
-import { AuthErrors } from "src/auth/auth.errors";
-import { ea } from "src/common/go-err";
+import { User } from "../user/user.schema";
 import { JwtService } from "@nestjs/jwt";
+import { ea } from "../common/go-err";
+import { AuthErrors } from "./auth.errors";
+import { LoginDto } from "./dto/login.dto";
 
 @Injectable()
 export class AuthService {
@@ -19,7 +18,7 @@ export class AuthService {
 
   async register(registerDto: RegisterDto) {
     const { password: plainPassword, ...identity } = registerDto;
-    const hashedPassword = await hash(plainPassword);
+    const hashedPassword = await argon2.hash(plainPassword);
 
     await this.userModel.init();
     var [doc, err] = await ea(() =>

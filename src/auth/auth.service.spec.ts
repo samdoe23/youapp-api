@@ -6,15 +6,15 @@ import {
   MongooseModule,
 } from "@nestjs/mongoose";
 import { JwtModule, JwtService } from "@nestjs/jwt";
-import { RegisterDto } from "src/auth/dto/register.dto";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import Joi from "joi";
 import { Connection, Model } from "mongoose";
-import { AuthErrors } from "src/auth/auth.errors";
-import { ea } from "src/common/go-err";
-import { Payload } from "src/jwt/jwt.payload";
-import { LoginDto } from "src/auth/dto/login.dto";
-import { User, UserSchema } from "src/user/user.schema";
+import { User, UserSchema } from "../user/user.schema";
+import { RegisterDto } from "./dto/register.dto";
+import { Payload } from "../jwt/jwt.payload";
+import { ea } from "../common/go-err";
+import { AuthErrors } from "./auth.errors";
+import { LoginDto } from "./dto/login.dto";
 
 describe("AuthService", () => {
   let authService: AuthService;

@@ -10,10 +10,10 @@ import {
 } from "@nestjs/websockets";
 import { Model, Types } from "mongoose";
 import { Server, Socket } from "socket.io";
-import { SubscribeMessageDto } from "src/chat/dtos/subscribe-message.dto";
-import { Message, Room } from "src/chat/room.schema";
-import { WsJwtGuard } from "src/jwt/jwt.guard";
-import { UserService } from "src/user/user.service";
+import { UserService } from "../user/user.service";
+import { Message, Room } from "./room.schema";
+import { WsJwtGuard } from "../jwt/jwt.guard";
+import { SubscribeMessageDto } from "./dtos/subscribe-message.dto";
 
 @UsePipes(new ValidationPipe({ exceptionFactory: (e) => new WsException(e) }))
 @WebSocketGateway({ cors: { origin: "*" } })

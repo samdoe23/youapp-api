@@ -10,11 +10,11 @@ import {
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
-import { LoginDto } from "src/auth/dto/login.dto";
-import { ea } from "src/common/go-err";
-import { AuthErrors } from "src/auth/auth.errors";
 import { Types } from "mongoose";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
+import { ea } from "../common/go-err";
+import { AuthErrors } from "./auth.errors";
+import { LoginDto } from "./dto/login.dto";
 
 @Controller()
 export class AuthController {

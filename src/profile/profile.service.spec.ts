@@ -7,9 +7,9 @@ import {
   getModelToken,
   MongooseModule,
 } from "@nestjs/mongoose";
-import { CreateProfileDto } from "src/profile/dto/create-profile.dto";
 import { Connection, Model, Types } from "mongoose";
-import { User, UserSchema } from "src/user/user.schema";
+import { User, UserSchema } from "../user/user.schema";
+import { CreateProfileDto } from "./dto/create-profile.dto";
 
 describe("ProfileService", () => {
   let service: ProfileService;

@@ -3,8 +3,8 @@ import { JwtService } from "@nestjs/jwt";
 import { AuthGuard } from "@nestjs/passport";
 import { WsException } from "@nestjs/websockets";
 import { Socket } from "socket.io";
-import { ea } from "src/common/go-err";
-import { Payload } from "src/jwt/jwt.payload";
+import { ea } from "../common/go-err";
+import { Payload } from "./jwt.payload";
 
 @Injectable()
 export class JwtGuard extends AuthGuard("jwt") {}
