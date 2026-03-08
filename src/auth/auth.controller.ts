@@ -9,6 +9,7 @@ import {
   Get,
   Header,
   applyDecorators,
+  UseGuards,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
@@ -24,8 +25,10 @@ import {
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiUnauthorizedResponse,
 } from "@nestjs/swagger";
 import { ErrorResponseDto } from "src/common/error-response.dto";
+import { JwtGuard } from "src/jwt/jwt.guard";
 
 const ApiCreatedJwtResponse = () =>
   applyDecorators(
@@ -129,4 +132,10 @@ export class AuthController {
 
     return id!.toString();
   }
+
+  @Get("/validateToken")
+  @UseGuards(JwtGuard)
+  @ApiForbiddenResponse()
+  @ApiUnauthorizedResponse()
+  async validateToken() {}
 }
