@@ -7,6 +7,8 @@ import {
   NotFoundException,
   Param,
   Get,
+  Header,
+  applyDecorators,
 } from "@nestjs/common";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
@@ -18,10 +20,19 @@ import { ParseObjectIdPipe } from "@nestjs/mongoose";
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
+  ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
 } from "@nestjs/swagger";
 import { ErrorResponseDto } from "src/common/error-response.dto";
+
+const ApiCreatedJwtResponse = () =>
+  applyDecorators(
+    ApiCreatedResponse({
+      content: { "text/plain": { schema: { type: "string" } } },
+      description: "JWT session",
+    }),
+  );
 
 @Controller()
 export class AuthController {
@@ -30,6 +41,8 @@ export class AuthController {
   @Post("/register")
   @ApiConflictResponse({ type: ErrorResponseDto })
   @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiCreatedJwtResponse()
+  @Header("content-type", "text/plain")
   async register(@Body() registerDto: RegisterDto) {
     var [jwt, err] = await ea(() => this.authService.register(registerDto));
 
@@ -45,13 +58,15 @@ export class AuthController {
         }[err] ?? err
       );
 
-    return jwt;
+    return jwt!;
   }
 
   @Post("/login")
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiForbiddenResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiCreatedJwtResponse()
+  @Header("content-type", "text/plain")
   async login(@Body() loginDto: LoginDto) {
     var [jwt, err] = await ea(() => this.authService.login(loginDto));
 
@@ -67,12 +82,14 @@ export class AuthController {
         }[err] ?? err
       );
 
-    return jwt;
+    return jwt!;
   }
 
   @Get("/getUsername/:id")
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiCreatedJwtResponse()
+  @Header("content-type", "text/plain")
   async getUsername(
     @Param("id", ParseObjectIdPipe)
     id: string,
@@ -90,6 +107,8 @@ export class AuthController {
   @Get("/getId/:username")
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
+  @ApiCreatedJwtResponse()
+  @Header("content-type", "text/plain")
   async getId(
     @Param("username")
     username: string,
