@@ -16,15 +16,28 @@ import { ea } from "src/common/go-err";
 import { Payload } from "src/jwt/jwt.payload";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Errors } from "src/profile/profile.errors";
-import { ApiSecurity } from "@nestjs/swagger";
+import {
+  ApiBadRequestResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiSecurity,
+  ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
+import { ErrorResponseDto } from "src/common/error-response.dto";
 
-@ApiSecurity("accessTokenHeader")
+const UserNotFoundError = new NotFoundException("user not found");
+
+@ApiBadRequestResponse({ type: ErrorResponseDto })
+@ApiNotFoundResponse({ type: ErrorResponseDto })
 @Controller()
 export class ProfileController {
   constructor(private readonly profileService: ProfileService) {}
 
   @UseGuards(JwtGuard)
+  @ApiSecurity("accessTokenHeader")
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiForbiddenResponse({ type: ErrorResponseDto })
   @Post("createProfile")
   async create(
     @Body() createProfileDto: ProfileDto,
@@ -37,7 +50,7 @@ export class ProfileController {
     if (err !== undefined)
       throw (
         {
-          [Errors.USER_NOT_FOUND]: new NotFoundException("user not found"),
+          [Errors.USER_NOT_FOUND]: UserNotFoundError,
         }[err] ?? err
       );
   }
@@ -51,7 +64,7 @@ export class ProfileController {
     if (err !== undefined)
       throw (
         {
-          [Errors.USER_NOT_FOUND]: new NotFoundException("user not found"),
+          [Errors.USER_NOT_FOUND]: UserNotFoundError,
         }[err] ?? err
       );
 
@@ -59,6 +72,9 @@ export class ProfileController {
   }
 
   @UseGuards(JwtGuard)
+  @ApiSecurity("accessTokenHeader")
+  @ApiUnauthorizedResponse({ type: ErrorResponseDto })
+  @ApiForbiddenResponse({ type: ErrorResponseDto })
   @Patch("updateProfile")
   async update(
     @Body() updateProfileDto: PartialProfileDto,
@@ -71,7 +87,7 @@ export class ProfileController {
     if (err !== undefined)
       throw (
         {
-          [Errors.USER_NOT_FOUND]: new NotFoundException("user not found"),
+          [Errors.USER_NOT_FOUND]: UserNotFoundError,
         }[err] ?? err
       );
   }

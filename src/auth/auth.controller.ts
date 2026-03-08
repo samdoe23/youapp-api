@@ -15,12 +15,21 @@ import { ea } from "src/common/go-err";
 import { AuthErrors } from "src/auth/auth.errors";
 import { Types } from "mongoose";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
+import {
+  ApiBadRequestResponse,
+  ApiConflictResponse,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+} from "@nestjs/swagger";
+import { ErrorResponseDto } from "src/common/error-response.dto";
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("/register")
+  @ApiConflictResponse({ type: ErrorResponseDto })
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
   async register(@Body() registerDto: RegisterDto) {
     var [jwt, err] = await ea(() => this.authService.register(registerDto));
 
@@ -40,6 +49,9 @@ export class AuthController {
   }
 
   @Post("/login")
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiForbiddenResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   async login(@Body() loginDto: LoginDto) {
     var [jwt, err] = await ea(() => this.authService.login(loginDto));
 
@@ -59,6 +71,8 @@ export class AuthController {
   }
 
   @Get("/getUsername/:id")
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   async getUsername(
     @Param("id", ParseObjectIdPipe)
     id: string,
@@ -74,6 +88,8 @@ export class AuthController {
   }
 
   @Get("/getId/:username")
+  @ApiBadRequestResponse({ type: ErrorResponseDto })
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   async getId(
     @Param("username")
     username: string,

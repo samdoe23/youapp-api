@@ -9,13 +9,20 @@ import {
   UseGuards,
 } from "@nestjs/common";
 import { ParseObjectIdPipe } from "@nestjs/mongoose";
-import { ApiSecurity } from "@nestjs/swagger";
+import {
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiSecurity,
+  ApiUnauthorizedResponse,
+} from "@nestjs/swagger";
 import { Types } from "mongoose";
 import { ChatGateway } from "src/chat/chat.gateway";
 import { ChatService } from "src/chat/chat.service";
 import { SendMessageDto } from "src/chat/dtos/send-message.dto";
 import { ViewMessagesDto } from "src/chat/dtos/view-messages.dto";
 import { ViewRoomsDto } from "src/chat/dtos/view-rooms.dto";
+import { ErrorResponseDto } from "src/common/error-response.dto";
+import { UserNotFoundError } from "src/common/user-not-found-exception";
 import { JwtGuard } from "src/jwt/jwt.guard";
 import { Payload } from "src/jwt/jwt.payload";
 import { UserService } from "src/user/user.service";
@@ -23,6 +30,8 @@ import { UserService } from "src/user/user.service";
 @Controller()
 @UseGuards(JwtGuard)
 @ApiSecurity("accessTokenHeader")
+@ApiUnauthorizedResponse({ type: ErrorResponseDto })
+@ApiForbiddenResponse({ type: ErrorResponseDto })
 export class ChatController {
   constructor(
     private readonly userService: UserService,
@@ -39,6 +48,7 @@ export class ChatController {
   }
 
   @Post("/sendMessage")
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   async sendMessage(
     @Body() message: SendMessageDto,
     @Req() req: Request & { user: Payload },
@@ -49,8 +59,7 @@ export class ChatController {
     const timestamp = new Date();
     const participants: [by: Types.ObjectId, to: Types.ObjectId] = [by, to];
 
-    if (!this.participantsExist(participants))
-      throw new NotFoundException("user doesn't exist");
+    if (!this.participantsExist(participants)) throw UserNotFoundError;
 
     const room = await this.chatService.saveMessage({
       by,
@@ -63,6 +72,7 @@ export class ChatController {
   }
 
   @Get("/viewMessages/:from")
+  @ApiNotFoundResponse({ type: ErrorResponseDto })
   async viewMessages(
     @Param("from", ParseObjectIdPipe) from: string,
     @Req() req: Request & { user: Payload },
@@ -72,8 +82,7 @@ export class ChatController {
       new Types.ObjectId(from),
     ];
 
-    if (!this.participantsExist(participants))
-      throw new NotFoundException("user doesn't exist");
+    if (!this.participantsExist(participants)) throw UserNotFoundError;
 
     const messages = (await this.chatService.getMessages(participants)) ?? [];
 
