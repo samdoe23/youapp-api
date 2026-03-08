@@ -23,12 +23,21 @@ import {
   ApiCreatedResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
 } from "@nestjs/swagger";
 import { ErrorResponseDto } from "src/common/error-response.dto";
 
 const ApiCreatedJwtResponse = () =>
   applyDecorators(
     ApiCreatedResponse({
+      content: { "text/plain": { schema: { type: "string" } } },
+      description: "JWT session",
+    }),
+  );
+
+const ApiOkJwtResponse = () =>
+  applyDecorators(
+    ApiOkResponse({
       content: { "text/plain": { schema: { type: "string" } } },
       description: "JWT session",
     }),
@@ -88,7 +97,7 @@ export class AuthController {
   @Get("/getUsername/:id")
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
-  @ApiCreatedJwtResponse()
+  @ApiOkJwtResponse()
   @Header("content-type", "text/plain")
   async getUsername(
     @Param("id", ParseObjectIdPipe)
@@ -107,7 +116,7 @@ export class AuthController {
   @Get("/getId/:username")
   @ApiBadRequestResponse({ type: ErrorResponseDto })
   @ApiNotFoundResponse({ type: ErrorResponseDto })
-  @ApiCreatedJwtResponse()
+  @ApiOkJwtResponse()
   @Header("content-type", "text/plain")
   async getId(
     @Param("username")
